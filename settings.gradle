@@ -1,0 +1,5 @@
+rootProject.name = 'compose-parent'
+include 'processor'
+include 'compose'
+include 'demo-java'
+
