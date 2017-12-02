@@ -23,6 +23,8 @@ class ComposedChildType extends ParentType {}
 
 ## TODO:
 
+ - Make it usable (top priority :joy: )
+
  - Provide super class in the constructor so we can interact with it.
  
  ```
