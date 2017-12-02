@@ -20,6 +20,8 @@ dependencies {
 
     testImplementation "com.google.testing.compile:compile-testing:0.13"
     testImplementation 'org.jetbrains.spek:spek-api:1.1.5'
+    // https://github.com/google/compile-testing/issues/28#issuecomment-77362528
+    testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
     testRuntimeOnly 'org.jetbrains.spek:spek-junit-platform-engine:1.1.5'
 }
 
