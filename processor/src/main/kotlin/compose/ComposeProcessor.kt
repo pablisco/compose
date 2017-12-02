@@ -1,17 +1,13 @@
 package compose
 
-import com.google.auto.common.MoreElements
 import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
 import java.io.IOException
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.*
-import javax.lang.model.type.TypeMirror
-import kotlin.reflect.KProperty1
+import javax.lang.model.element.Element
+import javax.lang.model.element.TypeElement
 
 class ComposeProcessor : AbstractProcessor(), ProcessEnvironmentAware {
 
@@ -38,35 +34,21 @@ class ComposeProcessor : AbstractProcessor(), ProcessEnvironmentAware {
     }
 
     private fun process(element: Element) {
-        when(element) {
+        when (element) {
             is TypeElement -> process(element)
             else -> printError(element, "Expected TypeElement")
         }
     }
 
     private fun process(element: TypeElement) {
-        val superClassName = elementUtils.getTypeElement(element.qualifiedName)
-
-        val packageElement = elementUtils.getPackageOf(superClassName).takeUnless { it.isUnnamed }
-        val packageName = packageElement?.qualifiedName?.toString()
-
-        val composeMirror: AnnotationMirror = element.annotationFor(Compose::class.java)!!
-
-        val superClassType: TypeMirror = composeMirror.valueFor(Compose::value) ?: throw RuntimeException("No extend")
-        val superclass: TypeName = TypeName.get(superClassType)
-
-        val composedClassName = composeMirror.let {
-            val prefix: String = it.valueFor(Compose::prefix) ?: ""
-            val postfix: String = it.valueFor(Compose::postfix) ?: ""
-            "$prefix${superClassName.simpleName}$postfix"
-        }.takeUnless { it == superClassName.simpleName.toString() } ?: "Composed${superClassName.simpleName}"
-
-        val typeSpec = element.toTypeSpec(composedClassName) {
-            superclass(superclass)
-        }
-
         try {
-            JavaFile.builder(packageName, typeSpec).build().writeTo(filer)
+            val composedMirror = ComposeAnnotationMirror(element.annotationFor(Compose::class.java)!!)
+            val packageName = elementUtils.getPackageOf(element).qualifiedName.toString()
+            val typeSpec = element.toTypeSpec(composedMirror.composeName(element.simpleName)) {
+                superclass(composedMirror.parentName)
+            }
+            val javaFile = JavaFile.builder(packageName, typeSpec).build()
+            javaFile.writeTo(filer)
         } catch (e: IOException) {
             printError(element, e.message)
         }
