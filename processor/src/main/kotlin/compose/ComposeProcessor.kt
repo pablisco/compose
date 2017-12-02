@@ -51,7 +51,7 @@ class ComposeProcessor : AbstractProcessor() {
         val packageName = pkg?.qualifiedName?.toString()
 
         val composeMirror = typeElement.annotationMirror(Compose::class.java)
-        val superClassType: TypeMirror = composeMirror[Compose::extend] ?: throw RuntimeException("No extends")
+        val superClassType: TypeMirror = composeMirror[Compose::value] ?: throw RuntimeException("No extends")
         val superclass: TypeName = TypeName.get(superClassType)
 
         val factoryClassName = composeMirror.let {

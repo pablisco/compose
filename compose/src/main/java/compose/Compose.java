@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface Compose {
 
-    Class<?> extend();
+    Class<?> value();
 
     String prefix() default "Composed";
 
