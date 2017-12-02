@@ -55,13 +55,15 @@ class ComposeProcessor : AbstractProcessor(), ProcessEnvironmentAware {
         val superClassType: TypeMirror = composeMirror.valueFor(Compose::value) ?: throw RuntimeException("No extend")
         val superclass: TypeName = TypeName.get(superClassType)
 
-        val factoryClassName = composeMirror.let {
+        val composedClassName = composeMirror.let {
             val prefix: String = it.valueFor(Compose::prefix) ?: ""
             val postfix: String = it.valueFor(Compose::postfix) ?: ""
             "$prefix${superClassName.simpleName}$postfix"
         }.takeUnless { it == superClassName.simpleName.toString() } ?: "Composed${superClassName.simpleName}"
 
-        val typeSpec = TypeSpec.classBuilder(factoryClassName).superclass(superclass).build()
+        val typeSpec = element.toTypeSpec(composedClassName) {
+            superclass(superclass)
+        }
 
         try {
             JavaFile.builder(packageName, typeSpec).build().writeTo(filer)
