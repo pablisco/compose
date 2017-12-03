@@ -1,35 +1,28 @@
 package compose
 
 import com.google.common.truth.Truth.assertAbout
-import com.google.testing.compile.JavaFileObjects
-import com.google.testing.compile.JavaFileObjects.*
+import com.google.testing.compile.JavaFileObjects.forResource
 import com.google.testing.compile.JavaSourcesSubjectFactory
 import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.jetbrains.spek.api.dsl.*
 
 class ComposeProcessorSpek : Spek({
 
-    given("A child class ") {
-        val files = assertAbout(JavaSourcesSubjectFactory.javaSources())
-            .that(listOf(
-                forResource("simple/ChildType.java"),
-                forResource("simple/ParentType.java")
-            ))
+    given("a processor") {
+        val processor = ComposeProcessor()
 
-        on("processed") {
-            val processed = files.processedWith(ComposeProcessor())
-
+        on("process simple child type") {
+            val files = assertAbout(JavaSourcesSubjectFactory.javaSources())
+                .that(listOf(
+                    forResource("simple/input/ChildType.java"),
+                    forResource("simple/input/ParentType.java")
+                ))
             it("generates composed file") {
-
-                processed.compilesWithoutError()
-                    .and().generatesSources(forResource("simple/ComposedChildType.java"))
-
+                files.processedWith(processor).compilesWithoutError()
+                    .and().generatesSources(forResource("simple/expected/ComposedChildType.java"))
             }
-
         }
 
     }
-
 })
+
