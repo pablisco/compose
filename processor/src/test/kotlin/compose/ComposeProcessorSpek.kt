@@ -26,12 +26,12 @@ class ComposeProcessorSpek : Spek({
         on("process child with fields") {
             val files = assertAbout(JavaSourcesSubjectFactory.javaSources())
                 .that(listOf(
-                    forResource("withFields/input/ChildType.java"),
-                    forResource("withFields/input/ParentType.java")
+                    forResource("withDelegateMethod/input/ChildType.java"),
+                    forResource("withDelegateMethod/input/ParentType.java")
                 ))
             it("generates composed file") {
                 files.processedWith(processor).compilesWithoutError()
-                    .and().generatesSources(forResource("withFields/expected/ComposedChildType.java"))
+                    .and().generatesSources(forResource("withDelegateMethod/expected/ComposedChildType.java"))
             }
         }
 

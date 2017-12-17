@@ -16,7 +16,7 @@ dependencies {
     implementation 'com.squareup:javapoet:1.9.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     implementation 'com.google.auto:auto-common:0.8'
-
+    implementation "fr.inria.gforge.spoon:spoon-core:6.0.0"
 
     testImplementation "com.google.testing.compile:compile-testing:0.13"
     testImplementation 'org.jetbrains.spek:spek-api:1.1.5'
